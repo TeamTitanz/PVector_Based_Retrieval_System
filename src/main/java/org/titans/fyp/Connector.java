@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Buddhi on 11/1/2017.
@@ -19,10 +21,48 @@ public class Connector {
         pv = PVector.getInstance();
     }
 
-    private void findSimilarCases(String sentences) throws Exception {
+    public String[] getCaseData(String line) {
+        String[] caseData = new String[6];
+        String court = "", caseName = "", date = "", caseID = "", arguedDate = "", decidedDate = "";
+
+        if (line.contains("United States Supreme Court")) {
+            court = "United States Supreme Court";
+            if (line.contains("No.")) {
+                String[] tem = line.split("Court")[1].split("No.");
+                if (tem[0].contains(",")) {
+                    String[] nt = tem[0].split(",");
+                    caseName = nt[0].trim();
+                    if (nt[1].contains("(") && nt[1].contains(")")) {
+                        date = (nt[1].split("\\(")[1].split("\\)")[0]).trim();
+                    }
+                } else {
+                    caseName = tem[0].trim();
+                }
+                if (tem[1].contains("Argued:")) {
+                    caseID = ("No." + tem[1].split("Argued:")[0]).trim();
+                    if (tem[1].contains("Decided:")) {
+                        String[] td = tem[1].split("Argued:")[1].split("Decided:");
+                        arguedDate = td[0].trim();
+                        decidedDate = td[1].trim();
+                    }
+                }
+            }
+        }
+
+        caseData[0] = court;
+        caseData[1] = caseName;
+        caseData[2] = date;
+        caseData[3] = caseID;
+        caseData[4] = arguedDate;
+        caseData[5] = decidedDate;
+        return caseData;
+    }
+
+    private List<String[]> findSimilarCases(String sentences) throws Exception {
         long startTime = System.currentTimeMillis();
         pv.setPVector(sentences);
 
+        List<String[]> similarCasesData = new ArrayList<>();
         ProcessBuilder builder = new ProcessBuilder(
                 "cmd.exe", "/c", pythonInterpreter + " " + pythonFile + " --count " + outputCount);
         builder.redirectErrorStream(true);
@@ -35,7 +75,6 @@ public class Connector {
                 break;
             }
             if (line.contains("data=")) {
-//                System.out.println(line.substring(5));
                 BufferedReader br;
                 String[] docID = line.substring(5).split(", ");
 
@@ -43,13 +82,12 @@ public class Connector {
                     for (String fileName : docID) {
                         String file = "D:\\Project\\fyp\\word2vec\\code\\work12\\finalSystem\\SystemConnector\\RawCases"
                                 + File.separator + fileName + ".txt";
-                        System.out.println(fileName);
+//                        System.out.println(fileName);
                         br = new BufferedReader(new FileReader(file));
-                        System.out.println(br.readLine());
-                        System.out.println("\n");
+                        similarCasesData.add(getCaseData(br.readLine().replaceAll("\\P{Print}", "")));
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         }
@@ -57,6 +95,8 @@ public class Connector {
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("Time Taken: " + (totalTime / 1000.0) + "s");
+
+        return similarCasesData;
     }
 
     public static void main(String gargs[]) {
@@ -72,13 +112,20 @@ public class Connector {
                 "However, birth registration officials refuse to issue the birth certificate " +
                 "with the partner’s name as one of the parents, stating that it is legally prohibited to issue.";
 
-        Connector wo = new Connector();
+        Connector con = new Connector();
         try {
-            wo.findSimilarCases(par);
+            for (String[] dt : con.findSimilarCases(par)) {
+                System.out.println("Court:" + dt[0]);
+                System.out.println("Case Name:" + dt[1]);
+                System.out.println("Date:" + dt[2]);
+                System.out.println("Case ID:" + dt[3]);
+                System.out.println("Argued Date:" + dt[4]);
+                System.out.println("Decided Date:" + dt[5]);
+                System.out.println();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 }
