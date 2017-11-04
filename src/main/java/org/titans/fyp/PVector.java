@@ -10,8 +10,7 @@ import java.util.List;
  */
 public class PVector {
 
-    public String serialized_folder = "D:\\Project\\fyp\\word2vec\\code\\work12\\finalSystem\\SystemConnector" +
-            "\\Serialized_folder";
+    public String serialized_folder = System.getProperty("user.dir") + File.separator + "Serialized_folder";
     private List<String> pWordList;
     private HashSet<String> vocabulary;
     private double[][] t_matrix;
