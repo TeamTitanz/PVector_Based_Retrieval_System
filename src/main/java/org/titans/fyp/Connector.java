@@ -22,49 +22,11 @@ public class Connector {
         pv = PVector.getInstance();
     }
 
-    public String[] getCaseData(String line) {
-        String[] caseData = new String[7];
-        String court = "", caseName = "", date = "", caseID = "", arguedDate = "", decidedDate = "";
-
-        if (line.contains("United States Supreme Court")) {
-            court = "United States Supreme Court";
-            if (line.contains("No.")) {
-                String[] tem = line.split("Court")[1].split("No.");
-                if (tem[0].contains(",")) {
-                    String[] nt = tem[0].split(",");
-                    caseName = nt[0].trim();
-                    if (nt[1].contains("(") && nt[1].contains(")")) {
-                        date = (nt[1].split("\\(")[1].split("\\)")[0]).trim();
-                    }
-                } else {
-                    caseName = tem[0].trim();
-                }
-                if (tem[1].contains("Argued:")) {
-                    caseID = ("No." + tem[1].split("Argued:")[0]).trim();
-                    if (tem[1].contains("Decided:")) {
-                        String[] td = tem[1].split("Argued:")[1].split("Decided:");
-                        arguedDate = td[0].trim();
-                        decidedDate = td[1].trim();
-                    }
-                }
-            }
-        }
-
-        caseData[0] = "";
-        caseData[1] = court;
-        caseData[2] = caseName;
-        caseData[3] = date;
-        caseData[4] = caseID;
-        caseData[5] = arguedDate;
-        caseData[6] = decidedDate;
-        return caseData;
-    }
-
-    private List<String[]> findSimilarCases(String sentences) throws Exception {
+    private List<Case> findSimilarCases(String sentences) throws Exception {
         long startTime = System.currentTimeMillis();
         pv.setPVector(sentences);
 
-        List<String[]> similarCasesData = new ArrayList<>();
+        List<Case> similarCases = new ArrayList<>();
         ProcessBuilder builder = new ProcessBuilder(
                 "cmd.exe", "/c", pythonInterpreter + " " + pythonFile + " --count " + outputCount);
         builder.redirectErrorStream(true);
@@ -84,10 +46,10 @@ public class Connector {
                     for (String fileName : docID) {
                         String file = folderPath + File.separator + "RawCases" + File.separator + fileName + ".txt";
                         br = new BufferedReader(new FileReader(file));
-                        String[] caseData = getCaseData(br.readLine().replaceAll("\\P{Print}", ""));
-                        caseData[0] = fileName;
+                        Case cs = new Case(fileName);
+                        cs.setCaseData(br.readLine().replaceAll("\\P{Print}", ""));
 //                        System.out.println(fileName);
-                        similarCasesData.add(caseData);
+                        similarCases.add(cs);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -99,7 +61,7 @@ public class Connector {
         long totalTime = endTime - startTime;
         System.out.println("Time Taken: " + (totalTime / 1000.0) + "s");
 
-        return similarCasesData;
+        return similarCases;
     }
 
     public static void main(String gargs[]) {
@@ -117,14 +79,14 @@ public class Connector {
 
         Connector con = new Connector();
         try {
-            for (String[] dt : con.findSimilarCases(par)) {
-                System.out.println("ID:" + dt[0]);
-                System.out.println("Court:" + dt[1]);
-                System.out.println("Case Name:" + dt[2]);
-                System.out.println("Date:" + dt[3]);
-                System.out.println("Case ID:" + dt[4]);
-                System.out.println("Argued Date:" + dt[5]);
-                System.out.println("Decided Date:" + dt[6]);
+            for (Case cs : con.findSimilarCases(par)) {
+                System.out.println("ID:" + cs.getId());
+                System.out.println("Court:" + cs.getCourt());
+                System.out.println("Case Name:" + cs.getCaseName());
+                System.out.println("Date:" + cs.getDate());
+                System.out.println("Case ID:" + cs.getCaseID());
+                System.out.println("Argued Date:" + cs.getArguedDate());
+                System.out.println("Decided Date:" + cs.getDecidedDate());
                 System.out.println();
             }
         } catch (Exception e) {
