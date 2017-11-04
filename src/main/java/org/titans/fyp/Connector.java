@@ -13,8 +13,9 @@ import java.util.List;
 public class Connector {
 
     int outputCount = 10;
+    String folderPath = System.getProperty("user.dir");
     String pythonInterpreter = "C:\\Users\\Buddhi\\Anaconda2\\envs\\mlPaper\\python.exe";
-    String pythonFile = "D:/Project/fyp/word2vec/code/work12/finalSystem/SystemConnector/get_similar_cases.py";
+    String pythonFile = folderPath + "/get_similar_cases.py";
     private PVector pv;
 
     public Connector() {
@@ -22,7 +23,7 @@ public class Connector {
     }
 
     public String[] getCaseData(String line) {
-        String[] caseData = new String[6];
+        String[] caseData = new String[7];
         String court = "", caseName = "", date = "", caseID = "", arguedDate = "", decidedDate = "";
 
         if (line.contains("United States Supreme Court")) {
@@ -49,12 +50,13 @@ public class Connector {
             }
         }
 
-        caseData[0] = court;
-        caseData[1] = caseName;
-        caseData[2] = date;
-        caseData[3] = caseID;
-        caseData[4] = arguedDate;
-        caseData[5] = decidedDate;
+        caseData[0] = "";
+        caseData[1] = court;
+        caseData[2] = caseName;
+        caseData[3] = date;
+        caseData[4] = caseID;
+        caseData[5] = arguedDate;
+        caseData[6] = decidedDate;
         return caseData;
     }
 
@@ -80,11 +82,12 @@ public class Connector {
 
                 try {
                     for (String fileName : docID) {
-                        String file = "D:\\Project\\fyp\\word2vec\\code\\work12\\finalSystem\\SystemConnector\\RawCases"
-                                + File.separator + fileName + ".txt";
-//                        System.out.println(fileName);
+                        String file = folderPath + File.separator + "RawCases" + File.separator + fileName + ".txt";
                         br = new BufferedReader(new FileReader(file));
-                        similarCasesData.add(getCaseData(br.readLine().replaceAll("\\P{Print}", "")));
+                        String[] caseData = getCaseData(br.readLine().replaceAll("\\P{Print}", ""));
+                        caseData[0] = fileName;
+//                        System.out.println(fileName);
+                        similarCasesData.add(caseData);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -115,12 +118,13 @@ public class Connector {
         Connector con = new Connector();
         try {
             for (String[] dt : con.findSimilarCases(par)) {
-                System.out.println("Court:" + dt[0]);
-                System.out.println("Case Name:" + dt[1]);
-                System.out.println("Date:" + dt[2]);
-                System.out.println("Case ID:" + dt[3]);
-                System.out.println("Argued Date:" + dt[4]);
-                System.out.println("Decided Date:" + dt[5]);
+                System.out.println("ID:" + dt[0]);
+                System.out.println("Court:" + dt[1]);
+                System.out.println("Case Name:" + dt[2]);
+                System.out.println("Date:" + dt[3]);
+                System.out.println("Case ID:" + dt[4]);
+                System.out.println("Argued Date:" + dt[5]);
+                System.out.println("Decided Date:" + dt[6]);
                 System.out.println();
             }
         } catch (Exception e) {
