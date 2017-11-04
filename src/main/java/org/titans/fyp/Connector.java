@@ -12,17 +12,16 @@ import java.util.List;
  */
 public class Connector {
 
-    int outputCount = 10;
-    String folderPath = System.getProperty("user.dir");
-    String pythonInterpreter = "C:\\Users\\Buddhi\\Anaconda2\\envs\\mlPaper\\python.exe";
-    String pythonFile = folderPath + "/get_similar_cases.py";
+    private String folderPath = System.getProperty("user.dir");
+    private String pythonInterpreter = "C:\\Users\\Buddhi\\Anaconda2\\envs\\mlPaper\\python.exe";
+    private String pythonFile = folderPath + File.separator + "SimilarCasesPython.py";
     private PVector pv;
 
     public Connector() {
         pv = PVector.getInstance();
     }
 
-    private List<Case> findSimilarCases(String sentences) throws Exception {
+    private List<Case> findSimilarCases(String sentences, int outputCount) throws Exception {
         long startTime = System.currentTimeMillis();
         pv.setPVector(sentences);
 
@@ -79,7 +78,7 @@ public class Connector {
 
         Connector con = new Connector();
         try {
-            for (Case cs : con.findSimilarCases(par)) {
+            for (Case cs : con.findSimilarCases(par, 10)) {
                 System.out.println("ID:" + cs.getId());
                 System.out.println("Court:" + cs.getCourt());
                 System.out.println("Case Name:" + cs.getCaseName());
