@@ -13,9 +13,14 @@ public class Connector {
     int outputCount = 10;
     String pythonInterpreter = "C:\\Users\\Buddhi\\Anaconda2\\envs\\mlPaper\\python.exe";
     String pythonFile = "D:/Project/fyp/word2vec/code/work12/finalSystem/SystemConnector/get_similar_cases.py";
+    private static PVector pv;
+
+    public Connector() {
+        pv = new PVector();
+    }
 
     private void findSimilarCases(String sentences) throws Exception {
-        PVector pv = new PVector();
+        long startTime = System.currentTimeMillis();
         pv.setPVector(sentences);
 
         ProcessBuilder builder = new ProcessBuilder(
@@ -49,6 +54,9 @@ public class Connector {
             }
         }
 
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        System.out.println("Time Taken: " + (totalTime / 1000.0) + "s");
     }
 
     public static void main(String gargs[]) {

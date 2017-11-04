@@ -14,21 +14,28 @@ import java.util.Properties;
 
 
 /**
- * Created by Keetmalin on 6/13/2017
- * Project - Tf-idf calculator with Pipeline
+ * Created by Buddhi on 11/1/2017
  */
 public class StanfordLemmatizer {
 
-    protected StanfordCoreNLP pipeline;
+    private static StanfordCoreNLP pipeline;
 
-    public StanfordLemmatizer() {
+    private StanfordLemmatizer() {
         // Create StanfordCoreNLP object properties, with POS tagging
         // (required for lemmatization), and lemmatization
         Properties props;
         props = new Properties();
         props.put("annotators", "tokenize, ssplit, pos, lemma");
 
-        this.pipeline = new StanfordCoreNLP(props);
+        pipeline = new StanfordCoreNLP(props);
+    }
+
+    private static class InstanceHolder {
+        static StanfordLemmatizer instance = new StanfordLemmatizer();
+    }
+
+    public static StanfordLemmatizer getInstance() {
+        return InstanceHolder.instance;
     }
 
     public List<String> lemmatize(String documentText) {

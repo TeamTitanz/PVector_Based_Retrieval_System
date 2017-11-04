@@ -10,9 +10,19 @@ import java.util.List;
  */
 public class PVector {
 
-    public static String serialized_folder = "D:\\Project\\fyp\\word2vec\\code\\work12\\finalSystem\\SystemConnector" +
+    public String serialized_folder = "D:\\Project\\fyp\\word2vec\\code\\work12\\finalSystem\\SystemConnector" +
             "\\Serialized_folder";
-    StanfordLemmatizer slem = new StanfordLemmatizer();
+    private List<String> pWordList;
+    private HashSet<String> vocabulary;
+    private double[][] t_matrix;
+    private StanfordLemmatizer slem;
+
+    public PVector() {
+        pWordList = getPWordList();
+        vocabulary = getVocabulary();
+        t_matrix = getTMatrix();
+        slem = StanfordLemmatizer.getInstance();
+    }
 
     public static int getIndex(HashSet<String> set, String value) {
         int result = 0;
@@ -127,7 +137,7 @@ public class PVector {
     }
 
     public void setPVector(String paragraph) {
-        List<Double> p_vector = docVector(paragraph, getPWordList(), getVocabulary(), getTMatrix());
+        List<Double> p_vector = docVector(paragraph, pWordList, vocabulary, t_matrix);
         StringBuilder sb = new StringBuilder();
         for (double val : p_vector) {
             sb.append(val);
