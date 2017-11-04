@@ -13,10 +13,10 @@ public class Connector {
     int outputCount = 10;
     String pythonInterpreter = "C:\\Users\\Buddhi\\Anaconda2\\envs\\mlPaper\\python.exe";
     String pythonFile = "D:/Project/fyp/word2vec/code/work12/finalSystem/SystemConnector/get_similar_cases.py";
-    private static PVector pv;
+    private PVector pv;
 
     public Connector() {
-        pv = new PVector();
+        pv = PVector.getInstance();
     }
 
     private void findSimilarCases(String sentences) throws Exception {

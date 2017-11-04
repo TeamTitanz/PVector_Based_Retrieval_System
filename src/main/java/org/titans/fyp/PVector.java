@@ -17,12 +17,21 @@ public class PVector {
     private double[][] t_matrix;
     private StanfordLemmatizer slem;
 
-    public PVector() {
+    private PVector() {
         pWordList = getPWordList();
         vocabulary = getVocabulary();
         t_matrix = getTMatrix();
         slem = StanfordLemmatizer.getInstance();
     }
+
+    private static class InstanceHolder {
+        static PVector instance = new PVector();
+    }
+
+    public static PVector getInstance() {
+        return InstanceHolder.instance;
+    }
+
 
     public static int getIndex(HashSet<String> set, String value) {
         int result = 0;
